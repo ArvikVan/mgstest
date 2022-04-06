@@ -1,6 +1,6 @@
 package arv.mgstest.service;
 
-import arv.mgstest.model.HelloMessage;
+import arv.mgstest.model.Message;
 import arv.mgstest.model.SimpleArray;
 
 /**
@@ -9,7 +9,7 @@ import arv.mgstest.model.SimpleArray;
  * @since 06.04.2022
  */
 public interface EventService {
-    public SimpleArray showMainArray(HelloMessage message) throws InterruptedException;
+    public SimpleArray showMainArray(Message message) throws InterruptedException;
     public SimpleArray showGeneratedArray() throws InterruptedException;
     public SimpleArray showGeneratedAuto() throws InterruptedException;
 }

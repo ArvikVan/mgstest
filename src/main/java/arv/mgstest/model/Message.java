@@ -5,14 +5,14 @@ package arv.mgstest.model;
  * @version 1.0
  * @since 06.04.2022
  */
-public class HelloMessage {
+public class Message {
     private String name;
 
 
-    public HelloMessage() {
+    public Message() {
     }
 
-    public HelloMessage(String name) {
+    public Message(String name) {
         this.name = name;
     }
 
