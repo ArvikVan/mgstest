@@ -51,7 +51,7 @@ public class ArrController {
      */
     @MessageMapping("/arr-auto")
     @SendTo("/topic/auto-array")
-    @Scheduled(fixedDelay = 10000)
+    //@Scheduled(fixedDelay = 10000)
     public SimpleArray showGeneratedAuto() throws InterruptedException {
         return eventService.showGeneratedAuto();
     }

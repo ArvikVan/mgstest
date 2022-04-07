@@ -55,8 +55,12 @@ public class EventServiceImpl implements EventService {
      * @throws InterruptedException ошибку ловим
      */
     @Override
-    public SimpleArray showGeneratedAuto() throws InterruptedException {
-        Thread.sleep(10000);
+    public SimpleArray showGeneratedAuto() {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new SimpleArray(getListOfNumForGeneratedArrays() + " генерация последовательностей каждые 10 секунд");
     }
 

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebSocket</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <!--<script src="/app.js"></script>-->
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="name">Enter the array length?</label>
+                    <input type="text" id="name" class="form-control" placeholder="Array length is...">
+                </div>
+                <button id="send" class="btn btn-default" type="submit">Send</button><br>
+                <button id="generate" class="btn btn-default" type="submit">Generate</button>
+                <button id="auto" class="btn btn-default" type="submit">Auto</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Main array</th>
+                </tr>
+                </thead>
+                <tbody id="mainarray">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="sconversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Secondary array</th>
+                </tr>
+                </thead>
+                <tbody id="secarray">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="scheduleconversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Auto array</th>
+                </tr>
+                </thead>
+                <tbody id="autoarray">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var stompClient = null;
+
+    function setConnected(connected) {
+        $("#connect").prop("disabled", connected);
+        $("#disconnect").prop("disabled", !connected);
+        if (connected) {
+            $("#conversation").show();
+            $("#sconversation").show();
+            $("#scheduleconversation").show();
+        }
+        else {
+            $("#conversation").hide();
+            $("#sconversation").hide();
+            $("#scheduleconversation").hide();
+        }
+        $("#mainarray").html("");
+        $("#secarray").html("");
+        $("#autoarray").html("");
+    }
+
+    function connect() {
+        var socket = new SockJS('/gs-guide-websocket');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            setConnected(true);
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/main-array', function (greeting) {
+                showMainArray(JSON.parse(greeting.body).content);
+            });
+            stompClient.subscribe('/topic/sec-array', function (secgreeting) {
+                showNewArr(JSON.parse(secgreeting.body).content);
+            });
+            stompClient.subscribe('/topic/auto-array', function (autogen) {
+                showAutoArray(JSON.parse(autogen.body).content);
+            });
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        setConnected(false);
+        console.log("Disconnected");
+    }
+
+    function sendName() {
+        stompClient.send("/app/arr", {}, JSON.stringify({'name': $("#name").val()}));
+    }
+
+    function showMainArray(message) {
+        $("#mainarray").append("<tr><td>" + message + "</td></tr>");
+    }
+
+    function genArray(message) {
+        stompClient.send("/app/arr-sec", {}, JSON.stringify(message));
+    }
+
+    function showNewArr(message) {
+        $("#secarray").append("<tr><td>" + message + "</td></tr>");
+    }
+
+    function genAutoArray(message) {
+        stompClient.send("/app/arr-auto", {}, JSON.stringify(message));
+    }
+
+  /*  function showAutoArray(message) {
+        $("#autoarray").append("<tr><td>" + message + "</td></tr>");
+    }*/
+    function showAutoArray(message) {
+        $("#autoarray").append("<tr><td>" + message + "</td></tr>");
+        genAutoArray(message);
+    }
+
+    $(function () {
+        $("form").on('submit', function (e) {
+            e.preventDefault();
+        });
+        $( "#connect" ).click(function() { connect(); });
+        $( "#disconnect" ).click(function() { disconnect(); });
+        $( "#send" ).click(function() { sendName(); });
+        $( "#generate" ).click(function() { genArray(); });
+        $( "#auto" ).click(function() { genAutoArray(); });
+    });
+</script>
+</html>
