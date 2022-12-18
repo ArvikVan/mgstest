@@ -2,6 +2,7 @@ package arv.mgstest.service;
 
 import arv.mgstest.model.Message;
 import arv.mgstest.model.SimpleArray;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
@@ -104,5 +105,24 @@ public class EventServiceImpl implements EventService {
     private static boolean isPrime(int x) {
         return IntStream.rangeClosed(2, (int) (Math.sqrt(x)))
                 .allMatch(n -> x % n != 0);
+    }
+    @Scheduled(fixedDelay = 3600000)
+    private boolean dates () {
+//        LocalDate start = LocalDate.ofYearDay(2021, 1);
+//        LocalDate end = LocalDate.ofYearDay(2021, 10);
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//        List<String> list = start.datesUntil(end).map(x -> x.format(formatter)).collect(Collectors.toList());
+//        System.out.println(list);
+        int x = 565;
+        if (x < 0) {
+            return false;
+        }
+        int number = x;
+        int reverse = 0;
+        while (number > 0) {
+            reverse = reverse*10 + number%10;
+            number/=10;
+        }
+        return x == reverse;
     }
 }
