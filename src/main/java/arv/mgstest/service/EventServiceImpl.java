@@ -6,10 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -106,7 +103,7 @@ public class EventServiceImpl implements EventService {
         return IntStream.rangeClosed(2, (int) (Math.sqrt(x)))
                 .allMatch(n -> x % n != 0);
     }
-    @Scheduled(fixedDelay = 3600000)
+//    @Scheduled(fixedDelay = 3600000)
     private boolean dates () {
 //        LocalDate start = LocalDate.ofYearDay(2021, 1);
 //        LocalDate end = LocalDate.ofYearDay(2021, 10);
@@ -124,5 +121,29 @@ public class EventServiceImpl implements EventService {
             number/=10;
         }
         return x == reverse;
+    }
+    @Scheduled(fixedDelay = 3600000)
+    public int romanToInt() {
+        String s = "LVIII";
+        Map<Character, Integer> romanMap = new HashMap<>();
+        romanMap.put('I', 1);
+        romanMap.put('V', 5);
+        romanMap.put('X', 10);
+        romanMap.put('L', 50);
+        romanMap.put('C', 100);
+        romanMap.put('D', 500);
+        romanMap.put('M', 1000);
+        int n = s.length();
+        int num = romanMap.get(s.charAt(n - 1));
+        for (int i = n - 2; i >= 0; i--) {
+            // Check if the character at right of current character is
+            // bigger or smaller
+            if (romanMap.get(s.charAt(i)) >= romanMap.get(s.charAt(i + 1))) {
+                num += romanMap.get(s.charAt(i));
+            } else {
+                num -= romanMap.get(s.charAt(i));
+            }
+        }
+        return num;
     }
 }
